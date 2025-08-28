@@ -1,0 +1,30 @@
+name: Build Loop
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: macos-latest
+
+    steps:
+      # Pobranie kodu
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # Instalacja .NET
+      - name: Setup .NET SDK
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      # Krok oczyszczający certyfikaty NUKE
+      - name: Clean .NET dev certificates (NUKE)
+        run: dotnet dev-certs https --clean
+
+      # Uruchomienie NUKE build
+      - name: Run NUKE build
+        run: ./build.sh --target Loop
