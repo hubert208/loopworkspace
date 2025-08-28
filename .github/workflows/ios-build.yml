@@ -1,3 +1,42 @@
-git add .github/workflows/ios-build.yml
-git commit -m "Add iOS build workflow"
-git push
+name: Build iOS App
+
+# Workflow uruchamia się przy push i pull request na branchu main
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build-ios:
+    runs-on: macos-latest  # <- macOS runner, konieczny do xcodebuild
+
+    steps:
+    # 1. Pobranie kodu z repo
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    # 2. Ustawienie Ruby
+    - name: Set up Ruby
+      uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: 3.2
+
+    # 3. Instalacja Fastlane
+    - name: Install Fastlane
+      run: gem install fastlane
+
+    # 4. Pobranie certyfikatów i provisioning profile przez Fastlane Match
+    - name: Match Certificates
+      env:
+        MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
+        APPLE_ID: ${{ secrets.APPLE_ID }}
+      run: fastlane match appstore
+
+    # 5. Budowa iOS .ipa
+    - name: Build iOS App
+      env:
+        APPLE_ID: ${{ secrets.APPLE_ID }}
+      run: fastlane gym --scheme "TwójSchemat" --export_method "app-store"
