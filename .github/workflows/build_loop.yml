@@ -1,6 +1,10 @@
-name: 4. Build Loop
+name:  Build Loop
 run-name: Build Loop (${{ github.ref_name }})
 on:
+  push:
+    branches:
+      -main
+      -dev
   workflow_dispatch:
 
   ## Remove the "#" sign from the beginning of the line below to get automated builds on push (code changes in your repository)
@@ -21,6 +25,9 @@ env:
   ALIVE_BRANCH_MAIN: alive-main
   ALIVE_BRANCH_DEV: alive-dev
 
+  APPLE_ID: ${{ secrets.APPLE_ID }}
+  APP_SPECIFIC_PASSWORD: ${{ secrets.APP_SPECIFIC_PASSWORD }}
+  DEVELOPER_TEAM_ID: ${{ secrets.DEVELOPER_TEAM_ID }}
 jobs:
   # Checks if Distribution certificate is present and valid, optionally nukes and
   # creates new certs if the repository variable ENABLE_NUKE_CERTS == 'true'
